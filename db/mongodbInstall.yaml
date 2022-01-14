@@ -1,0 +1,5 @@
+#set dbPath to storage engine
+# wiredTiger for concurreny
+# Leave journaling enabled in order to ensure that mongod will be able to recover its data
+
+# Read Concern Write Concern 
