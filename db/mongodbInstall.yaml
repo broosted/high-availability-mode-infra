@@ -3,3 +3,21 @@
 # Leave journaling enabled in order to ensure that mongod will be able to recover its data
 
 # Read Concern Write Concern 
+
+#use mongodb community install role
+- hosts: dbservers
+  collections:
+    - community.mongodb
+
+  tasks:
+    - name: Grab MongoDB Repo
+      import_role:
+        name: mongodb_repository
+    
+    - name: Install MongoDB
+      import_role:
+        name: mongodb_install
+
+    - name: Run MongoDB cluster
+      import_role:
+        name: mongodb_mongod
