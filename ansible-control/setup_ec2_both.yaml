@@ -1,0 +1,29 @@
+# setup master instances with tag host = master and slave with tag host = slave
+# attributes: VPC and Subnet from default
+# linux / default AMI and security default
+# keypair name: broosted
+# ebs should be added
+# run the inventory after everything is created to update the hosts file
+# ami-0892d3c7ee96c0bf7 (64-bit x86) / ami-078278691222aee06 (64-bit Arm)
+---
+- hosts: localhost
+  tasks:
+    - name: start an instance for master
+      amazon.aws.ec2_instance:
+        key_name: "broosted"
+        vpc_subnet_id: subnet-db8bbca2
+        instance_type: t4g.small
+        security_group: default
+        image_id: ami-078278691222aee06
+        tags:
+          host: master
+    - name: start an instance for master
+      amazon.aws.ec2_instance:
+        key_name: "broosted"
+        vpc_subnet_id: subnet-db8bbca2
+        instance_type: t4g.small
+        security_group: default
+        image_id: ami-078278691222aee06
+        tags:
+          host: slave
+
