@@ -8,8 +8,9 @@
 ---
 - hosts: localhost
   tasks:
-    - name: start an instance for master
+    - name: start instances for CP master
       amazon.aws.ec2_instance:
+        name: "{{ item }}"
         key_name: "broosted"
         vpc_subnet_id: subnet-db8bbca2
         instance_type: t4g.small
@@ -17,8 +18,13 @@
         image_id: ami-078278691222aee06
         tags:
           host: master
-    - name: start an instance for master
+      loop:
+        - master1
+        - master2
+        - master3
+    - name: start instances for Kube slaves
       amazon.aws.ec2_instance:
+        name: "{{ item }}"
         key_name: "broosted"
         vpc_subnet_id: subnet-db8bbca2
         instance_type: t4g.small
@@ -26,4 +32,8 @@
         image_id: ami-078278691222aee06
         tags:
           host: slave
+      loop:
+        - slave1
+        - slave2
+        - slave3
 
