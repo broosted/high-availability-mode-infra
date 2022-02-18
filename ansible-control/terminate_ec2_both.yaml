@@ -11,3 +11,7 @@
             state: absent
             filters:
               tag:host: slave
+      - name: terminate instance for load balancer
+        amazon.aws.elb_classic_lb:
+            name: "cp-load-balancer"
+            state: absent
