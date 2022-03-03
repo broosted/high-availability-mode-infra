@@ -11,10 +11,8 @@
           - ca-certificates
       
     - name: get kube packages
-      get_url:
-        attributes: -fsSL
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        dest: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+      ansible.builtin.shell: |
+        sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
       
     - name: run this shell command for certs
       shell: echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
@@ -26,7 +24,15 @@
           - kubectl
           - kubelet
           - kubeadm
-
-        
-
-      
+    - name: install docker
+      apt:
+        update_cache: yes
+        name: 
+          - gnupg
+          - lsb-release
+    - name: install docker continued
+      shell: |
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+              sudo apt-get update
+              sudo apt-get install -y docker-ce

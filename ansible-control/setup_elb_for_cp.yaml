@@ -10,10 +10,11 @@
     - name: create and start and TCP forwarding ELB for Control Plane cluster
       amazon.aws.elb_classic_lb:
           name: "cp-load-balancer"
-          scheme: internal
           state: present
           instance_ids: "{{ [0,1,2] | map('extract',data_struct.instances,'instance_id') | list }}"
           purge_instance_ids: true
+          scheme: internal
+          security_group_ids: 'sg-07a0e1fd9f638844e'
           subnets:
               - subnet-db8bbca2
           listeners:
