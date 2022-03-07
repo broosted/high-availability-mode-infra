@@ -2,9 +2,11 @@
 - hosts: aws_ec2
   become: yes
   tasks:
+    - name: get update
+      shell: |
+              sudo apt-get update
     - name: install prereq
       apt:
-        update_cache: yes
         name: 
           - curl
           - apt-transport-https
@@ -17,22 +19,28 @@
     - name: run this shell command for certs
       shell: echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
     
+    - name: get update
+      shell: |
+              sudo apt-get update
+
     - name: install kube tools
       apt:
-        update_cache: yes
         name:
           - kubectl
           - kubelet
           - kubeadm
+    
+    - name: get update
+      shell: |
+              sudo apt-get update
     - name: install docker
       apt:
-        update_cache: yes
         name: 
           - gnupg
           - lsb-release
     - name: install docker continued
       shell: |
-              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+              sudo curl -fsSLo /usr/share/keyrings/docker-archive-keyring.gpg https://download.docker.com/linux/ubuntu/gpg
               echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
               sudo apt-get update
               sudo apt-get install -y docker-ce
