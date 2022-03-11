@@ -3,24 +3,18 @@
   become: yes
   tasks:
     - name: get update
-      shell: |
-              sudo apt-get update
+      shell: apt-get update
     - name: install prereq
       apt:
         name: 
           - curl
           - apt-transport-https
           - ca-certificates
-      
-    - name: get kube packages
-      ansible.builtin.shell: |
-        sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-      
+
     - name: run this shell command for certs
-      shell: echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-    
-    - name: get update
       shell: |
+              sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+              echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
               sudo apt-get update
 
     - name: install kube tools
@@ -31,8 +25,7 @@
           - kubeadm
     
     - name: get update
-      shell: |
-              sudo apt-get update
+      shell: sudo apt-get update
     - name: install docker
       apt:
         name: 
@@ -40,7 +33,20 @@
           - lsb-release
     - name: install docker continued
       shell: |
-              sudo curl -fsSLo /usr/share/keyrings/docker-archive-keyring.gpg https://download.docker.com/linux/ubuntu/gpg
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
               echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+              chmod o+r /usr/share/keyrings/docker-archive-keyring.gpg
               sudo apt-get update
               sudo apt-get install -y docker-ce
+    - name: install CRI-O runtime
+      shell: |
+              echo "deb [signed-by=/usr/share/keyrings/libcontainers-archive-keyring.gpg] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_20.04/ /" > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
+              echo "deb [signed-by=/usr/share/keyrings/libcontainers-crio-archive-keyring.gpg] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/1.23/xUbuntu_20.04/ /" > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable:cri-o:1.23.list
+              mkdir -p /usr/share/keyrings
+              curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_20.04/Release.key | gpg --batch --yes --dearmor -o /usr/share/keyrings/libcontainers-archive-keyring.gpg
+              curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/1.23/xUbuntu_20.04/Release.key | gpg --batch --yes --dearmor -o /usr/share/keyrings/libcontainers-crio-archive-keyring.gpg
+
+    - name: install CRI-O runtime continued
+      shell: |
+              apt-get update
+              apt-get install cri-o cri-o-runc
