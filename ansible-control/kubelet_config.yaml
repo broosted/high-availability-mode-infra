@@ -1,0 +1,12 @@
+---
+- hosts: aws_ec2
+  become: yes
+  tasks:
+    - name: copy file
+      ansible.builtin.copy:
+        src: config.sh
+        dest: config.sh
+        mode: 'u+x'
+    - name: get update
+      shell: 
+          "./config.sh"
