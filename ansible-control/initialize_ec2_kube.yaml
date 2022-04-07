@@ -36,7 +36,16 @@
         src: kubeadm_config.yaml
         dest: kubeadm_config.yaml
         mode: 'u+x'
-    - name: export defaults
+
+    - name: copy daemon.json file
+      ansible.builtin.copy:
+        src: daemon.json
+        dest: /etc/docker/daemon.json
+        mode: 'u+x'
+
+    - name: reboot containerd
       shell: |
-              sudo chown $(id -u):$(id -g) $HOME/kubeadm_config.yaml
-              export KUBECONFIG=$HOME/kubeadm_config.yaml
+              sudo systemctl daemon-reload
+              sudo systemctl start docker
+              sudo systemctl restart containerd
+              

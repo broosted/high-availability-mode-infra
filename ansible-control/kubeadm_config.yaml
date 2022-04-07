@@ -32,7 +32,7 @@ kubernetesVersion: 1.23.0
 networking:
   dnsDomain: cluster.local
   serviceSubnet: 10.96.0.0/12
-  podSubnet: 10.85.0.0/16
+  podSubnet: 192.168.0.0/16
 scheduler: {}
 controlPlaneEndpoint: cp-load-balancer-89eb1e54fd51d6f3.elb.us-west-2.amazonaws.com
 ---
