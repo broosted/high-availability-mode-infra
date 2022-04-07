@@ -9,7 +9,6 @@ bootstrapTokens:
       - authentication
 kind: InitConfiguration
 nodeRegistration:
-  criSocket: unix:///var/run/crio/crio.sock
   kubeletExtraArgs:
     cloud-provider: external
 ---

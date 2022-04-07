@@ -1,0 +1,54 @@
+---
+- hosts: aws_ec2
+  become: yes
+  tasks:
+    - name: setup containerd runtime
+      shell: |
+              cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+              overlay
+              br_netfilter
+              EOF
+
+              sudo modprobe overlay
+              sudo modprobe br_netfilter
+
+              # Setup required sysctl params, these persist across reboots.
+              cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+              net.bridge.bridge-nf-call-iptables  = 1
+              net.ipv4.ip_forward                 = 1
+              net.bridge.bridge-nf-call-ip6tables = 1
+              EOF
+
+              # Apply sysctl params without reboot
+              sudo sysctl --system
+              sudo apt-get update
+
+    - name: install prereq
+      apt:
+        name: 
+          - curl
+          - apt-transport-https
+          - ca-certificates
+          - gnupg
+          - lsb-release
+    - name: install docker continued
+      shell: |
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+              chmod o+r /usr/share/keyrings/docker-archive-keyring.gpg
+              sudo apt-get update
+              sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+              sudo mkdir -p /etc/containerd
+              containerd config default | sudo tee /etc/containerd/config.toml
+              sudo systemctl restart containerd
+
+# Using the systemd cgroup driver 
+# To use the systemd cgroup driver in /etc/containerd/config.toml with runc, set
+
+# [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+#   ...
+#   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+#     SystemdCgroup = true
+# If you apply this change make sure to restart containerd again:
+
+# sudo systemctl restart containerd
