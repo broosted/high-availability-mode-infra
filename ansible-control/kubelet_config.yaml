@@ -4,9 +4,24 @@
   tasks:
     - name: copy file
       ansible.builtin.copy:
-        src: config.sh
-        dest: config.sh
+        src: kubeadm_config.yaml
+        dest: kubeadm_config.yaml
         mode: 'u+x'
-    - name: get update
-      shell: 
-          "./config.sh"
+    - name: export defaults
+      shell: |
+              sudo chown $(id -u):$(id -g) $HOME/kubeadm_config.yaml
+              export KUBECONFIG=$HOME/kubeadm_config.yaml
+              export CIDR=10.224.0.0/16
+              sh -c 'echo "[Service]
+              Environment=\"KUBELET_EXTRA_ARGS=--enable-cri=true --container-runtime=remote --runtime-request-timeout=15m --image-service-endpoint /var/run/crio.sock --container-runtime-endpoint /var/run/crio.sock\"" > /etc/systemd/system/kubelet.service.d/0-crio.conf'
+    - name: get private dns instance
+      uri:
+        url: "http://169.254.169.254/latest/meta-data/local-hostname"
+        return_content: true
+      register: private_dns_local
+    - name: set hostname
+      shell: |
+              sudo hostnamectl set-hostname {{private_dns_local.content}}
+              sudo reboot
+
+# after kubeadm init do export KUBECONFIG=/etc/kubernetes/admin.conf  

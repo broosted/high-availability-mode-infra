@@ -18,6 +18,7 @@
         image_id: ami-078278691222aee06
         tags:
           host: master
+          kubernetes.io/cluster/kubernetes: owned
       loop:
         - master1
         - master2
@@ -32,6 +33,7 @@
         image_id: ami-078278691222aee06
         tags:
           host: slave
+          kubernetes.io/cluster/kubernetes: owned
       loop:
         - slave1
         - slave2
