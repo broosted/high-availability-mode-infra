@@ -37,6 +37,6 @@
           host: slave
           kubernetes.io/cluster/kubernetes: owned
       loop:
-        - slave1
-        - slave2
-        - slave3
+        - worker1
+        - worker2
+        - worker3
