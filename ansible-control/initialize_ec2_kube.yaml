@@ -43,6 +43,12 @@
         dest: /etc/docker/daemon.json
         mode: 'u+x'
 
+    - name: copy aws-k8s-cni file
+      ansible.builtin.copy:
+        src: aws-k8s-cni.yaml
+        dest: aws-k8s-cni.yaml
+        mode: 'u+x'
+
     - name: reboot containerd
       shell: |
               sudo systemctl daemon-reload

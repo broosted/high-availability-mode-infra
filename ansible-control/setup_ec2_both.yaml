@@ -16,8 +16,7 @@
         instance_type: t4g.small
         security_group: default
         image_id: ami-078278691222aee06
-        iam_instance_profile:
-          arn: arn:aws:iam::166823635889:role/ec2_kube_load_balanced
+        instance_role: ec2_kube_load_balanced
         tags:
           host: master
           kubernetes.io/cluster/kubernetes: owned
@@ -33,8 +32,7 @@
         instance_type: t4g.small
         security_group: default
         image_id: ami-078278691222aee06
-        iam_instance_profile:
-          arn: arn:aws:iam::166823635889:role/ec2_kube_load_balanced
+        instance_role: ec2_kube_load_balanced
         tags:
           host: slave
           kubernetes.io/cluster/kubernetes: owned
