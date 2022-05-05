@@ -4,12 +4,8 @@
   tasks:
     - name: copy file
       ansible.builtin.copy:
-        src: kubeadm_config.yaml
-        dest: kubeadm_config.yaml
+        src: aws-k8s-cni.yaml
+        dest: aws-k8s-cni.yaml
         mode: 'u+x'
-    - name: export defaults
-      shell: |
-              sudo chown $(id -u):$(id -g) $HOME/kubeadm_config.yaml
-              export KUBECONFIG=$HOME/kubeadm_config.yaml
 
-# after kubeadm init do export KUBECONFIG=/etc/kubernetes/admin.conf  
+#kubectl apply -f aws-k8s-cni.yaml
