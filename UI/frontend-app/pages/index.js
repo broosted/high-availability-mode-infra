@@ -1,16 +1,14 @@
 import Head from 'next/head'
 import Layout, { siteTitle } from '../components/layout'
-import utilStyles from '../styles/utils.module.css'
 import { getSortedPostsData } from '../lib/posts'
+import utilStyles from '../styles/utils.module.css'
 
 export async function getStaticProps() {
-  const allPostsData = getSortedPostsData()
-  return {
-    props: {
-      allPostsData
-    }
-  }
+  const allPostsData = await getSortedPostsData()
+  return { props: { allPostsData } }
 }
+
+
 
 export default function Home({ allPostsData }) {
   return (
@@ -28,17 +26,18 @@ export default function Home({ allPostsData }) {
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Blog</h2>
         <ul className={utilStyles.list}>
-          {allPostsData.map(({ id, date, title }) => (
+          {allPostsData.map(({ name, phone, id }) => (
             <li className={utilStyles.listItem} key={id}>
-              {title}
+              {phone}
               <br />
               {id}
               <br />
-              {date}
+              {name}
             </li>
           ))}
         </ul>
       </section>
+   
     </Layout>
   )
 }
