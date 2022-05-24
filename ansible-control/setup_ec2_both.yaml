@@ -13,9 +13,9 @@
         name: "{{ item }}"
         key_name: "broosted"
         vpc_subnet_id: subnet-db8bbca2
-        instance_type: t4g.small
+        instance_type: t3.small
         security_group: default
-        image_id: ami-078278691222aee06
+        image_id: ami-0cb4e786f15603b0d
         instance_role: ec2_kube_load_balanced
         tags:
           host: master
@@ -29,9 +29,9 @@
         name: "{{ item }}"
         key_name: "broosted"
         vpc_subnet_id: subnet-db8bbca2
-        instance_type: t4g.small
+        instance_type: t3.small
         security_group: default
-        image_id: ami-078278691222aee06
+        image_id: ami-0cb4e786f15603b0d
         instance_role: ec2_kube_load_balanced
         tags:
           host: slave
