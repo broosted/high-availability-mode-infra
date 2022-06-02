@@ -4,11 +4,9 @@
 
 export async function getSortedPostsData() {
     // Fetch data from external API
-    const res = await fetch(process.env.API_URL + `/api/data`)
-    const data = await res.json()
-  
-    // Pass data to the page via props
-    return data
+      const res = await fetch(process.env.API_URL + `/api/data`)
+      const data = await res.json()
+      return data
   }
   // Get file names under /posts
   // const fileNames = fs.readdirSync(postsDirectory)

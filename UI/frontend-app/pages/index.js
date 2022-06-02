@@ -3,9 +3,11 @@ import Layout, { siteTitle } from '../components/layout'
 import { getSortedPostsData } from '../lib/posts'
 import utilStyles from '../styles/utils.module.css'
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
+
   const allPostsData = await getSortedPostsData()
-  return { props: { allPostsData } }
+  return { props: { allPostsData },
+  notFound: {name: 'abe',phone: '2323'}}
 }
 
 
