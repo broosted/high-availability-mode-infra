@@ -2,6 +2,9 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: back-app
+  namespace: default
+  labels:
+    app: back-app
 spec:
   containers:
   - name: back-app
@@ -12,6 +15,9 @@ spec:
       limits:
         memory: "400Mi"
         cpu: "500m"
+    env:
+      - name: DB_SERVICE
+        value: "db-service.default.svc.cluster.local"
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
@@ -31,6 +37,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: app-service
+  namespace: default
 spec:
   selector:
     app: back-app

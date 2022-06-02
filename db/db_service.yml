@@ -2,6 +2,9 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: db-mongo
+  namespace: default
+  labels:
+    app: db-mongo
 spec:
   containers:
   - name: db-mongo
@@ -31,6 +34,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: db-service
+  namespace: default
 spec:
   selector:
     app: db-mongo
