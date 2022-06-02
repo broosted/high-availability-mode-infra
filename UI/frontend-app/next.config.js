@@ -1,7 +1,7 @@
 
  const nextConfig = {
     env: {
-        API_URL: 'http://172.17.0.4:8080',
+        API_URL: 'http://app-service.default.svc.cluster.local:8080',
       },
   }
   
