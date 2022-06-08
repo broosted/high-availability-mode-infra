@@ -1,0 +1,30 @@
+---
+- hosts: tag_host_Name_master1
+  become: yes
+  tasks:
+    - name: setup user developer
+      shell: |
+              openssl genrsa -out broosted.key 2048
+              openssl req -new -key broosted.key -out broosted.csr
+              cat broosted.csr | base64 | tr -d "\n"
+              cat <<EOF | kubectl apply -f -
+              apiVersion: certificates.k8s.io/v1
+              kind: CertificateSigningRequest
+              metadata:
+                name: broosted
+              spec:
+                request: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ2lqQ0NBWElDQVFBd1JURUxNQWtHQTFVRUJoTUNRVlV4RXpBUkJnTlZCQWdNQ2xOdmJXVXRVM1JoZEdVeApJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcGRITWdVSFI1SUV4MFpEQ0NBU0l3RFFZSktvWklodmNOCkFRRUJCUUFEZ2dFUEFEQ0NBUW9DZ2dFQkFObGF5NllmckdzYXh2YkpwaXNjNlB5N2oyOUR0WGJWNitQcTNVcVUKT3hza3AxeUVUdEJPK1c5SEdveUliam1pRkRqdzJCWWJaSEY2VnpFV1dNUGZFMUNkTkxzczBDY2ZkT3FOeU9XdgpnTitTTTNSZHBMQWVPUlgyb2FuODFZaFNEeEgzdWVZa3UxUWM4S2R2MHRzbWhFd2IvZjY0OXJ3eHUzN3FndldXCmRmSUVGZForZkpPaUFBR29WRElkWVhWYWtERUtVcWU2Z3ZoYUdWQTdkTElickJCeU5LR3V0YUpCeE9UUWs5VE4KNFpIa0k2dWZCQ0UxWnZkZkd5NE1seUY0Q2NzRjBQbkYzd0pTb2tEQ3pmVDBiS0hBbUJKT28rNGhGTzhsb3NzTQpFVy9mRUhXckYvRGtvaHhNelFaYmhNVmo5cDBOK2ZxSURKNzI2TkdOSGkyWmF0MENBd0VBQWFBQU1BMEdDU3FHClNJYjNEUUVCQ3dVQUE0SUJBUUJCcGwvNjJKT1ZLZVF4UE1scXlGalc4dnB5NERXd3ExWEIyc0tmckdRNlBjbTUKRTA3a3hMMmE5Znl4eVQ1MG54YzE4Q21WYi91T0pudDg1TmtKS3g2dFdpbmxZN2U4QXhRMCtLSTZDWVl4OE10dwpFeGdXbnlackIxaXkyaks4L3pJZ0lRSmFmaHk5UGFRbE5ZaTA3cVIzdS9NUFg3aTZUNlRjYnNkc2VDZkFmSmh3Cmt0YUJhOWRPNE1rRngzUXhzWWNYd2lMN0xFM1JZelhFQU9ueFZRQmVLTTlNOFlDSkhQczQzaFRYRkZmejZSY3IKK1ZzY3Q2cVNpd2JYQ3dOVkxySUpRNHNFTEJKd3ZQZGhzSkdaNkpIanFSWk50SzJSSmQyK011THNSVUJ4RE12Lwo5UjJtSnV2bDFIQzhWbjA4ZURiUEZKV3B3aFk4VHpyRzZ3TUovOVNWCi0tLS0tRU5EIENFUlRJRklDQVRFIFJFUVVFU1QtLS0tLQo=
+                signerName: kubernetes.io/kube-apiserver-client
+                expirationSeconds: 86400  # one day
+                usages:
+                  - client auth
+              EOF
+              kubectl get csr
+              kubectl certificate approve broosted
+              kubectl get csr/broosted -o yaml
+              kubectl get csr broosted -o jsonpath='{.status.certificate}'| base64 -d > broosted.crt
+              kubectl create role developer --verb=create --verb=get --verb=list --verb=update --verb=delete --resource=pods
+              kubectl create rolebinding developer-binding-broosted --role=developer --user=broosted
+              kubectl config set-credentials broosted --client-key=broosted.key --client-certificate=broosted.crt --embed-certs=true
+              kubectl config set-context broosted --cluster=kubernetes --user=broosted
+              kubectl config use-context broosted
